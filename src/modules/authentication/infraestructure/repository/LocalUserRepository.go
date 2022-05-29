@@ -6,6 +6,7 @@ import (
 	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/entities"
 )
 
+//TODO: Implement db (POSTGRES AND MONGODB) repository
 type LocalUserRepository struct {
 	usersCredentials  []entities.UserCredentials
 	userAuthorization []entities.UserAuthorization

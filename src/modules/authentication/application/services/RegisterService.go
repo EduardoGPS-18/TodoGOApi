@@ -15,18 +15,19 @@ func (r *RegisterService) RegisterNewUser(email, password string) (*entities.Use
 		return nil, errors.NewValidationError("user already exists")
 	}
 
+	//TODO: REFACT FULL USER CREATION TO DOMAIN SERVICES
 	userCredentials, err := entities.NewUserCredentials(email, password)
+	if err != nil {
+		return nil, err
+	}
+
+	userAuthorization, err := entities.NewUserAuthorization(userCredentials.ID)
 	if err != nil {
 		return nil, err
 	}
 
 	repositoryError := r.userRepository.SaveUserCredentials(userCredentials)
 	if repositoryError != nil {
-		return nil, err
-	}
-
-	userAuthorization, err := entities.NewUserAuthorization(userCredentials.ID)
-	if err != nil {
 		return nil, err
 	}
 

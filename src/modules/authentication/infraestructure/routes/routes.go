@@ -29,6 +29,7 @@ func DefineAuthenticationRoutes(r *gin.Engine) *gin.Engine {
 
 	r.Group("/auth")
 	{
+		// TODO: TRY TO MOVE DUPLICATED CODE TO A HELPER METHOD
 		r.POST("/login", func(ctx *gin.Context) {
 			loginUserDTO := helpers.GetGinBody[controller.LoginUserDTO](ctx)
 			user, err := controller.NewLoginController(loginService).Handle(loginUserDTO)
