@@ -3,6 +3,7 @@ package services
 import (
 	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/entities"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/errors"
+	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/services"
 )
 
 type RegisterService struct {
@@ -15,28 +16,21 @@ func (r *RegisterService) RegisterNewUser(email, password string) (*entities.Use
 		return nil, errors.NewValidationError("user already exists")
 	}
 
-	//TODO: REFACT FULL USER CREATION TO DOMAIN SERVICES
-	userCredentials, err := entities.NewUserCredentials(email, password)
+	user, err := services.CreateFullUser(email, password)
 	if err != nil {
 		return nil, err
 	}
 
-	userAuthorization, err := entities.NewUserAuthorization(userCredentials.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	repositoryError := r.userRepository.SaveUserCredentials(userCredentials)
+	repositoryError := r.userRepository.SaveUserCredentials(user.UserCredentials)
 	if repositoryError != nil {
 		return nil, err
 	}
 
-	repositoryError = r.userRepository.SaveUserAuthorization(userAuthorization)
+	repositoryError = r.userRepository.SaveUserAuthorization(user.UserAuthorization)
 	if repositoryError != nil {
 		return nil, err
 	}
 
-	user := entities.NewUser(userCredentials, userAuthorization)
 	return user, nil
 }
 
