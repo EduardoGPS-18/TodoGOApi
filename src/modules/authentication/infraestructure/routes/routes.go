@@ -3,23 +3,12 @@ package routes
 import (
 	"com.task-go-api.com/dudu.com/src/modules/authentication/application/services"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/entities"
-	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/errors"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/infraestructure/helpers"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/infraestructure/repository"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/presentation/controller"
+	"com.task-go-api.com/dudu.com/src/modules/authentication/presentation/dtos"
 	"github.com/gin-gonic/gin"
 )
-
-func ConvertErrorToStatusCode(err interface{}) int {
-	switch err.(type) {
-	case errors.ValidationError:
-		return 400
-	case errors.SessionExpiredError:
-		return 403
-	default:
-		return 500
-	}
-}
 
 func DefineAuthenticationRoutes(r *gin.Engine) *gin.Engine {
 	var userRepository entities.UserRepository = repository.NewLocalUserRepository()
@@ -29,27 +18,16 @@ func DefineAuthenticationRoutes(r *gin.Engine) *gin.Engine {
 
 	r.Group("/auth")
 	{
-		// TODO: TRY TO MOVE DUPLICATED CODE TO A HELPER METHOD
 		r.POST("/login", func(ctx *gin.Context) {
-			loginUserDTO := helpers.GetGinBody[controller.LoginUserDTO](ctx)
-			user, err := controller.NewLoginController(loginService).Handle(loginUserDTO)
-
-			if err != nil {
-				statusCode := ConvertErrorToStatusCode(err)
-				ctx.JSON(statusCode, err)
-			} else {
-				ctx.JSON(200, user.ToJson())
-			}
+			helpers.GinRouteAdapter(ctx, func(body controller.LoginUserDTO) (*dtos.UserDTO, *dtos.ErrorDto) {
+				return controller.NewLoginController(loginService).Handle(body)
+			})
 		})
+
 		r.POST("/register", func(ctx *gin.Context) {
-			registerUserDTO := helpers.GetGinBody[controller.RegisterUserDTO](ctx)
-			user, err := controller.NewRegisterController(registerService).Handle(registerUserDTO)
-			if err != nil {
-				statusCode := ConvertErrorToStatusCode(err)
-				ctx.JSON(statusCode, err)
-			} else {
-				ctx.JSON(200, user.ToJson())
-			}
+			helpers.GinRouteAdapter(ctx, func(body controller.RegisterUserDTO) (*dtos.UserDTO, *dtos.ErrorDto) {
+				return controller.NewRegisterController(registerService).Handle(body)
+			})
 		})
 	}
 

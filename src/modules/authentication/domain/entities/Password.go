@@ -15,7 +15,6 @@ func NewPassword(value string) (*Password, errors.DomainError) {
 	}
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(value), 10)
-
 	password := Password{
 		Value: hashedPassword,
 	}
