@@ -14,16 +14,16 @@ func NewPassword(value string) (*Password, errors.DomainError) {
 		return nil, errors.NewValidationError("Password weak")
 	}
 
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(value), 10)
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(value), bcrypt.DefaultCost)
 	password := Password{
 		Value: hashedPassword,
 	}
-
 	return &password, nil
 }
 
 func (p *Password) ComparesPassword(password string) errors.DomainError {
 	err := bcrypt.CompareHashAndPassword(p.Value, []byte(password))
+
 	if err != nil {
 		return errors.NewValidationError("Password not matches")
 	}

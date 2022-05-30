@@ -1,15 +1,11 @@
 package helpers
 
 import (
-	"fmt"
-	"reflect"
-
 	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/errors"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/presentation/dtos"
 )
 
 func ConvertDomainErrorToDTO(err interface{}) *dtos.ErrorDto {
-	fmt.Printf("ERROR: %v", reflect.TypeOf(err))
 
 	switch err.(type) {
 	case *errors.ValidationError, errors.ValidationError:

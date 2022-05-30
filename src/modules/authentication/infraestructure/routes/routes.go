@@ -1,8 +1,11 @@
 package routes
 
 import (
+	"log"
+
 	"com.task-go-api.com/dudu.com/src/modules/authentication/application/services"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/domain/entities"
+	database "com.task-go-api.com/dudu.com/src/modules/authentication/infraestructure/database/connections"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/infraestructure/helpers"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/infraestructure/repository"
 	"com.task-go-api.com/dudu.com/src/modules/authentication/presentation/controller"
@@ -11,9 +14,13 @@ import (
 )
 
 func DefineAuthenticationRoutes(r *gin.Engine) *gin.Engine {
-	var userRepository entities.UserRepository = repository.NewLocalUserRepository()
-	var loginService services.LoginService = services.NewLoginService(userRepository)
+	err := database.InitializePG()
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	var userRepository entities.UserRepository = repository.NewDatabaseUserRepository(database.Instance)
+	var loginService services.LoginService = services.NewLoginService(userRepository)
 	var registerService services.RegisterService = services.NewRegisterService(userRepository)
 
 	r.Group("/auth")

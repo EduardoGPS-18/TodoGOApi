@@ -18,7 +18,7 @@ type LoginController struct {
 func (l *LoginController) Handle(LoginUserDTO LoginUserDTO) (*dtos.UserDTO, *dtos.ErrorDto) {
 	user, err := l.loginService.LoginWithEmailAndPassword(LoginUserDTO.Email, LoginUserDTO.Password)
 	if err != nil {
-		return nil, helpers.ConvertDomainErrorToDTO(&err)
+		return nil, helpers.ConvertDomainErrorToDTO(err)
 	}
 	return dtos.UserDTOFromEntity(user), nil
 }

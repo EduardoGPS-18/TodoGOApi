@@ -20,7 +20,6 @@ func (r *RegisterService) RegisterNewUser(email, password string) (*entities.Use
 	if err != nil {
 		return nil, err
 	}
-
 	repositoryError := r.userRepository.SaveUserCredentials(user.UserCredentials)
 	if repositoryError != nil {
 		return nil, err
